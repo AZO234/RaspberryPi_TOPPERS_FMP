@@ -1,0 +1,117 @@
+#
+#  Raspberry Pi porting
+#  2016 (c) AZO
+#
+
+#  GNU toolchain prefix (change if necessary)
+GCC_TARGET = arm-none-eabi
+
+#  Board name
+BOARD = rp3
+
+#  Chip
+ifeq ($(BOARD),rp2)
+	CHIP = BCM2836
+	CDEFS := $(CDEFS) -DTOPPERS_USE_BCM2836
+endif
+ifeq ($(BOARD),rp3)
+	CHIP = BCM2837
+	CDEFS := $(CDEFS) -DTOPPERS_USE_BCM2837
+endif
+
+#  BCM283x Secure
+# BCM283X_SVC_NONSEC : SVC起動（kernel_old=1）、ベクタは0x0、セキュアビットを手動で落とす、4コアは同時起動
+# BCM283X_SVC_SEC    : SVC起動（kernel_old=1）、ベクタは0x0、4コアは同時起動
+# BCM283X_SVC_NONSEC : HYP起動（kernel_old=1なし）、ベクタは0x8000、1コアが起動し残り3コアを起こす
+
+TOPPERS_TARGET_SECURE = BCM283X_SVC_NONSEC
+
+ifeq ($(TOPPERS_TARGET_SECURE),BCM283X_SVC_NONSEC)
+CDEFS := $(CDEFS) -DTOPPERS_BCM283X_SECURE_SVC_NONSEC
+endif
+ifeq ($(TOPPERS_TARGET_SECURE),BCM283X_SVC_SEC)
+CDEFS := $(CDEFS) -DTOPPERS_BCM283X_SECURE_SVC_SEC
+endif
+ifeq ($(TOPPERS_TARGET_SECURE),BCM283X_HYP_NONSEC)
+CDEFS := $(CDEFS) -DTOPPERS_BCM283X_SECURE_HYP_NONSEC
+endif
+
+ifeq ($(BOARD),rp2)
+	COPTS := $(COPTS) -mcpu=cortex-a7
+	LDFLAGS := $(LDFLAGS) -mcpu=cortex-a7
+	CDEFS := $(CDEFS) -D__TARGET_ARCH_ARM=7
+endif
+ifeq ($(BOARD),rp3)
+	COPTS := $(COPTS) -mcpu=cortex-a53
+	LDFLAGS := $(LDFLAGS) -mcpu=cortex-a53
+	CDEFS := $(CDEFS) -D__TARGET_ARCH_ARM=7
+endif
+
+#  VFP/NEON
+BCM283X_USE_VFP = 0
+ifeq ($(BCM283X_USE_VFP),1)
+	CDEFS := $(CDEFS) -DTOPPERS_USE_VFP -DSUPPORT_VFPv3_NEON
+	ifeq ($(CHIP),BCM2836)
+		COPTS := $(COPTS) -mfpu=neon-vfpv4 -mfloat-abi=hard
+	endif
+	ifeq ($(CHIP),BCM2837)
+		COPTS := $(COPTS) -mfpu=neon-fp-armv8 -mfloat-abi=hard -funsafe-math-optimizations
+	endif
+endif
+
+# NONSECURE parameters: UART-0 (G_SYSLOG)
+# ----------------------------------------------------------
+CDEFS         := $(CDEFS) -DTOPPERS_SAFEG_NONSECURE -DG_SYSLOG
+KERNEL_COBJS  := $(KERNEL_COBJS)
+
+#  Compiler options
+INCLUDES := $(INCLUDES) -I$(TARGETDIR)
+COPTS    := $(COPTS) -mlittle-endian
+LDFLAGS  := $(LDFLAGS) -mlittle-endian -nostdlib
+
+#  Kernel definitions
+KERNEL_DIR   := $(KERNEL_DIR) $(TARGETDIR)
+KERNEL_COBJS := $(KERNEL_COBJS) target_config.o target_gpio.o
+
+#  Trace logger definitions
+ifeq ($(ENABLE_TRACE),true)
+      COPTS        := $(COPTS) -DTOPPERS_ENABLE_TRACE
+      KERNEL_DIR   := $(KERNEL_DIR) $(SRCDIR)/arch/logtrace
+      KERNEL_COBJS := $(KERNEL_COBJS) trace_config.o trace_dump.o
+endif
+
+#  Linker script
+ifeq ($(BOARD),rp2)
+	ifeq ($(TOPPERS_TARGET_SECURE),BCM283X_SECURE_HYP_NONSEC)
+		LDSCRIPT = $(TARGETDIR)/rp2.ld
+	else
+		LDSCRIPT = $(TARGETDIR)/rp2_svc.ld
+	endif
+endif
+ifeq ($(BOARD),rp3)
+	ifeq ($(TOPPERS_TARGET_SECURE),BCM283X_SECURE_HYP_NONSEC)
+		LDSCRIPT = $(TARGETDIR)/rp3.ld
+	else
+		LDSCRIPT = $(TARGETDIR)/rp3_svc.ld
+	endif
+endif
+
+#  Startup code (linked directly from vexpressa9.ld)
+HIDDEN_OBJS = start.o
+
+$(HIDDEN_OBJS): %.o: %.S
+	$(CC) -c $(CFLAGS) $(KERNEL_CFLAGS) $<
+
+$(HIDDEN_OBJS:.o=.d): %.d: %.S
+	@$(PERL) $(SRCDIR)/utils/makedep -C $(CC) \
+		-O "$(CFLAGS) $(KERNEL_CFLAGS)" $< >> Makefile.depend
+
+LDFLAGS := -nostdlib $(LDFLAGS)
+
+#  Dependency timestamp
+kernel_cfg.timestamp: $(TARGETDIR)/target.tf
+$(OBJFILE): $(TARGETDIR)/target_check.tf
+
+#  Include the BCM283X Makefile
+include $(SRCDIR)/arch/arm_gcc/bcm283x/Makefile.chip
+

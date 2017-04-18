@@ -1,0 +1,44 @@
+# chip_config.c
+chip_mprc_initialize
+chip_initialize
+chip_exit
+x_config_int
+ipi_ext_handler
+default_int_handler
+
+# chip_support.S
+irq_handler
+target_exc_handler
+target_ret_exc
+target_ret_int
+
+# kernel_cfg.c
+p_inh_table
+p_cfgint_table
+
+# mpcore.c
+mpcore_dcache_enable
+mpcore_dcache_disable
+mpcore_icache_enable
+mpcore_icache_disable
+mpcore_cache_enable
+mpcore_cache_disable
+mmu_map_memory
+scu_init
+dic_stop
+dic_init
+dic_set_target
+dic_set_pending
+dic_clear_pending
+dic_enable_int
+dic_disable_int
+dic_cpu_stop
+dic_set_priority
+dic_config
+dic_probe_int
+dic_cpu_init
+scu_counter_init
+mpcore_smp_mode_enable
+mpcore_mmu_init
+
+INCLUDE "arm_gcc/common/core"

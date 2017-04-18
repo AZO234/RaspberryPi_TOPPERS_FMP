@@ -1,0 +1,7 @@
+# target_config.c
+target_mprc_initialize
+target_mmu_init
+target_initialize
+target_exit
+
+INCLUDE "arm_gcc/bcm283x/chip"

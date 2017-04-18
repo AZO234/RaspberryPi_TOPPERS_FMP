@@ -1,0 +1,8 @@
+E_PACKAGE fmp_rp2_gcc
+VERSION %date
+
+INCLUDE MANIFEST
+INCLUDE ../../MANIFEST
+INCLUDE ../../arch/arm_gcc/bcm283x/MANIFEST
+INCLUDE ../../cfg/MANIFEST
+../../cfg/cfg/cfg

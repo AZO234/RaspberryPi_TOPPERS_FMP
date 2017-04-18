@@ -1,0 +1,8 @@
+offsetof_PCB_p_firstlock,#(TTYPE_KLOCK != G_KLOCK),,"offsetof(PCB,p_firstlock)"
+offsetof_PCB_p_secondlock,#(TTYPE_KLOCK != G_KLOCK),,"offsetof(PCB,p_secondlock)"
+offsetof_PCB_locspnid,"offsetof(PCB,locspnid)"
+offsetof_PCB_excpt_nest_count,"offsetof(PCB,target_pcb.arm_pcb.excpt_nest_count)"
+offsetof_PCB_istkpt,"offsetof(PCB,target_pcb.arm_pcb.istkpt)"
+offsetof_PCB_p_exch_tbl,"offsetof(PCB,target_pcb.arm_pcb.p_exch_tbl)"
+offsetof_PCB_p_inh_tbl,"offsetof(PCB,target_pcb.p_inh_tbl)"
+TNUM_INH,TNUM_INH
