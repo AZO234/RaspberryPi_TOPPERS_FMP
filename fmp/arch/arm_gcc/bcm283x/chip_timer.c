@@ -54,7 +54,7 @@
 Inline void
 target_timer_int_clear()
 {
-	sil_wrw_mem(BCM283X_LTIMER_WRITE, 0x80000000);
+	sil_wrw_mem((void *)BCM283X_LTIMER_WRITE, 0x80000000);
 }
 
 /*
@@ -66,12 +66,12 @@ target_timer_initialize(intptr_t exinf)
 	/*
 	 *  タイマを停止する．
 	 */
-	sil_wrw_mem(BCM283X_LTIMER_CTLSTA, 0);
+	sil_wrw_mem((void *)BCM283X_LTIMER_CTLSTA, 0);
 
 	/*
 	 *  タイマ動作を開始する．
 	 */
-	sil_wrw_mem(BCM283X_LTIMER_CTLSTA, 0x30000000 | 38400U);	/* 38.4MHz 1ms */
+	sil_wrw_mem((void *)BCM283X_LTIMER_CTLSTA, 0x30000000 | 38400U);	/* 38.4MHz 1ms */
 
 	/*
 	 *  タイマ割込み要求をクリアする．
@@ -88,7 +88,7 @@ target_timer_terminate(intptr_t exinf)
 	/*
 	 *  タイマを停止する．
 	 */
-	sil_wrw_mem(BCM283X_LTIMER_CTLSTA, 0);
+	sil_wrw_mem((void *)BCM283X_LTIMER_CTLSTA, 0);
 
 	/*
 	 *  タイマ割込み要求をクリアする．

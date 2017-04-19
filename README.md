@@ -53,12 +53,12 @@ Eclipse+OpenOCD+JTAG，arm-non-eabi-gdb
 TOPPERS/FMPカーネル 簡易版  
 https://www.toppers.jp/fmp-e-download.html
 
-「Sabreボード（Freescale社）簡易パッケージ」を取得し、  
-（例：fmp_imx6_gcc-20160715.zip）  
+「Zynq7000（Xilinx社）簡易パッケージ」を取得し、  
+（例：fmp_zynq_gcc-20170315.zip）  
 本ソース差分を上書きする。
 
 user.txtに従ってビルド環境を作成する．  
-<ターゲット略称> は，rp2_gccとなる．
+<ターゲット略称> は，rp2_gcc または rp3_gcc となる．
 
 sample の，Makefile を改変しているので，  
 kernel7.img が生成される．

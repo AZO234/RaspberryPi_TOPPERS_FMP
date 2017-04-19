@@ -87,19 +87,6 @@
 #define CCSIDR_NUM_SETS_MASK         0x0FFFE000
 #define CCSIDR_NUM_SETS_OFFSET      13
 
-#define CLIDR_CTYPE_NO_CACHE          0
-#define CLIDR_CTYPE_INSTRUCTION_ONLY  1
-#define CLIDR_CTYPE_DATA_ONLY         2
-#define CLIDR_CTYPE_INSTRUCTION_DATA  3
-#define CLIDR_CTYPE_UNIFIED           4
-
-#define CLIDR_MAX_CTYPE         7
-#define CLIDR_CTYPE_MASK      0x7
-#define CLIDR_CTYPE_BITWIDTH    3
-
-#define CSSELR_IND_DATA_UNIFIED       0
-#define CSSELR_IND_INSTRUCTION        1
-
 #endif /* __TARGET_ARCH_ARM == 7 */
 
 /*
@@ -123,38 +110,6 @@
 /*
  *  コプロを用いたルーチン
  */
-
-/*
- *  High exception vector を使うかの設定
- */
-Inline void
-set_high_vector(bool_t enable)
-{
-	uint32_t control;
-
-	CP15_CONTROL_READ(control);
-
-	if (enable) {
-		control |= CP15_CONTROL_V_BIT;
-	}
-	else {
-		control &= ~CP15_CONTROL_V_BIT;
-	}
-
-	CP15_CONTROL_WRITE(control);
-}
-
-/*
- *  プロセッサINDEX（0オリジン）の取得
- */
-Inline uint32_t
-x_prc_index(void)
-{
-	uint32_t index;
-
-	CP15_CPUID_READ(index);
-	return((index & 0x0fU));
-}
 
 /*
  *  Data Synchronization Barrier

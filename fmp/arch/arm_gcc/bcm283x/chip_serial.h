@@ -88,14 +88,14 @@ bcm283x_putc(char c)
 #if BCM283X_USE_UART == 1
 	uint32_t a;
 	for(a=0;a<1000;a++) {
-		if((sil_rew_mem(BCM283X_AUX_MU_LSR_REG) & 0x20) != 0) break;
+		if((sil_rew_mem((void *)BCM283X_AUX_MU_LSR_REG) & 0x20) != 0) break;
 	}
 //	while(1) {
-//		if((sil_rew_mem(BCM283X_AUX_MU_LSR_REG) & 0x20) != 0) break;
+//		if((sil_rew_mem((void *)BCM283X_AUX_MU_LSR_REG) & 0x20) != 0) break;
 //	}
-	sil_wrw_mem(BCM283X_AUX_MU_IO_REG, c);
+	sil_wrw_mem((void *)BCM283X_AUX_MU_IO_REG, c);
 #else	/* BCM283X_USE_UART */
-	sil_wrw_mem(BCM283X_UART0_DR, c);		/* Write DR 0:7 */
+	sil_wrw_mem((void *)BCM283X_UART0_DR, c);		/* Write DR 0:7 */
 #endif	/* BCM283X_USE_UART */
 }
 

@@ -186,8 +186,6 @@ x_get_pcc(PERFCNT *p_count)
 Inline void
 x_rst_pcc(void)
 {
-	uint32_t tmp, tmp1;
-
 	/* カウンタ停止はない */
 
 	/* カウンターレジスタの初期化 */

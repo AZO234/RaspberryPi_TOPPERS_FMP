@@ -118,9 +118,4 @@ print_banner_copyright(intptr_t exinf)
 
 文字コーディングをUTF-8とした．
 
-○変更履歴
-2016/10/23
-・α0.01 RPi3で動作．
-2016/10/17
-・α0.00 未動作．
 

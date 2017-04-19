@@ -104,13 +104,13 @@ uart_getready(SIOPCB *p_siopcb)
 {
 #if BCM283X_USE_UART == 1
 #ifdef BCM283X_UART_ENABLE_FIFO
-	return((sil_rew_mem(BCM283X_AUX_MU_LSR_REG) & 0x01) != 0);
+	return((sil_rew_mem((void *)BCM283X_AUX_MU_LSR_REG) & 0x01) != 0);
 #else	/* BCM283X_UART_ENABLE_FIFO */
 	return(true);
 #endif	/* BCM283X_UART_ENABLE_FIFO */
 #else	/* BCM283X_USE_UART */
 #ifdef BCM283X_UART_ENABLE_FIFO
-	return((sil_rew_mem(BCM283X_UART0_FR) & (1 << 4)) == 0);	/* Receive FIFO is not empty is true */
+	return((sil_rew_mem((void *)BCM283X_UART0_FR) & (1 << 4)) == 0);	/* Receive FIFO is not empty is true */
 #else	/* BCM283X_UART_ENABLE_FIFO */
 	return(true);
 #endif	/* BCM283X_UART_ENABLE_FIFO */
@@ -125,12 +125,12 @@ uart_putready(SIOPCB *p_siopcb)
 {
 #if BCM283X_USE_UART == 1
 	if (p_siopcb->openflag) {
-		return((sil_rew_mem(BCM283X_AUX_MU_LSR_REG) & 0x20) != 0);
+		return((sil_rew_mem((void *)BCM283X_AUX_MU_LSR_REG) & 0x20) != 0);
 	} else {
 		return(true);
 	}
 #else	/* BCM283X_USE_UART */
-	return((sil_rew_mem(BCM283X_UART0_FR) & (1 << 5)) == 0);	/* Transmit FIFO is not full is true */
+	return((sil_rew_mem((void *)BCM283X_UART0_FR) & (1 << 5)) == 0);	/* Transmit FIFO is not full is true */
 #endif	/* BCM283X_USE_UART */
 }
 
@@ -141,9 +141,9 @@ Inline uint8_t
 uart_getchar(SIOPCB *p_siopcb)
 {
 #if BCM283X_USE_UART == 1
-	return((uint8_t)(sil_rew_mem(BCM283X_AUX_MU_IO_REG) & 0xFF));
+	return((uint8_t)(sil_rew_mem((void *)BCM283X_AUX_MU_IO_REG) & 0xFF));
 #else	/* BCM283X_USE_UART */
-	return((uint8_t)(sil_rew_mem(BCM283X_UART0_DR)) & 0xFF);	/* Read DR 0:7 */
+	return((uint8_t)(sil_rew_mem((void *)BCM283X_UART0_DR)) & 0xFF);	/* Read DR 0:7 */
 #endif	/* BCM283X_USE_UART */
 }
 
@@ -154,9 +154,9 @@ Inline void
 uart_putchar(SIOPCB *p_siopcb, uint8_t c)
 {
 #if BCM283X_USE_UART == 1
-	sil_wrw_mem(BCM283X_AUX_MU_IO_REG, c);
+	sil_wrw_mem((void *)BCM283X_AUX_MU_IO_REG, c);
 #else	/* BCM283X_USE_UART */
-	sil_wrw_mem(BCM283X_UART0_DR, c);		/* Write DR 0:7 */
+	sil_wrw_mem((void *)BCM283X_UART0_DR, c);		/* Write DR 0:7 */
 #endif	/* BCM283X_USE_UART */
 }
 
@@ -169,13 +169,13 @@ uart_enable_send(SIOPCB *p_siopcb)
 	uint32_t	imsc;
 
 #if BCM283X_USE_UART == 1
-	imsc = sil_rew_mem(BCM283X_AUX_MU_IER_REG);
+	imsc = sil_rew_mem((void *)BCM283X_AUX_MU_IER_REG);
 //	imsc |= 0x2;
-	sil_wrw_mem(BCM283X_AUX_MU_IER_REG, imsc);
+	sil_wrw_mem((void *)BCM283X_AUX_MU_IER_REG, imsc);
 #else	/* BCM283X_USE_UART */
-	imsc = sil_rew_mem(BCM283X_UART0_IMSC);
+	imsc = sil_rew_mem((void *)BCM283X_UART0_IMSC);
 //	imsc |= 0x20;
-	sil_wrw_mem(BCM283X_UART0_IMSC, imsc);
+	sil_wrw_mem((void *)BCM283X_UART0_IMSC, imsc);
 #endif	/* BCM283X_USE_UART */
 }
 
@@ -188,13 +188,13 @@ uart_disable_send(SIOPCB *p_siopcb)
 	uint32_t	imsc;
 
 #if BCM283X_USE_UART == 1
-	imsc = sil_rew_mem(BCM283X_AUX_MU_IER_REG);
+	imsc = sil_rew_mem((void *)BCM283X_AUX_MU_IER_REG);
 	imsc &= ~(0x2);
-	sil_wrw_mem(BCM283X_AUX_MU_IER_REG, imsc);
+	sil_wrw_mem((void *)BCM283X_AUX_MU_IER_REG, imsc);
 #else	/* BCM283X_USE_UART */
-	imsc = sil_rew_mem(BCM283X_UART0_IMSC);
+	imsc = sil_rew_mem((void *)BCM283X_UART0_IMSC);
 	imsc &= ~(0x20);
-	sil_wrw_mem(BCM283X_UART0_IMSC, imsc);
+	sil_wrw_mem((void *)BCM283X_UART0_IMSC, imsc);
 #endif	/* BCM283X_USE_UART */
 }
 
@@ -208,13 +208,13 @@ uart_enable_rcv(SIOPCB *p_siopcb)
 	uint32_t	imsc;
 
 #if BCM283X_USE_UART == 1
-	imsc = sil_rew_mem(BCM283X_AUX_MU_IER_REG);
+	imsc = sil_rew_mem((void *)BCM283X_AUX_MU_IER_REG);
 	imsc |= 0x5;
-	sil_wrw_mem(BCM283X_AUX_MU_IER_REG, imsc);
+	sil_wrw_mem((void *)BCM283X_AUX_MU_IER_REG, imsc);
 #else	/* BCM283X_USE_UART */
-	imsc = sil_rew_mem(BCM283X_UART0_IMSC);
+	imsc = sil_rew_mem((void *)BCM283X_UART0_IMSC);
 	imsc |= 0x10;
-	sil_wrw_mem(BCM283X_UART0_IMSC, imsc);
+	sil_wrw_mem((void *)BCM283X_UART0_IMSC, imsc);
 #endif	/* BCM283X_USE_UART */
 }
 
@@ -227,13 +227,13 @@ uart_disable_rcv(SIOPCB *p_siopcb)
 	uint32_t	imsc;
 
 #if BCM283X_USE_UART == 1
-	imsc = sil_rew_mem(BCM283X_AUX_MU_IER_REG);
+	imsc = sil_rew_mem((void *)BCM283X_AUX_MU_IER_REG);
 	imsc &= ~(0x5);
-	sil_wrw_mem(BCM283X_AUX_MU_IER_REG, imsc);
+	sil_wrw_mem((void *)BCM283X_AUX_MU_IER_REG, imsc);
 #else	/* BCM283X_USE_UART */
 	imsc = sil_rew_mem(BCM283X_UART0_IMSC);
 	imsc &= ~(0x10);
-	sil_wrw_mem(BCM283X_UART0_IMSC, imsc);
+	sil_wrw_mem((void *)BCM283X_UART0_IMSC, imsc);
 #endif	/* BCM283X_USE_UART */
 }
 
@@ -273,32 +273,32 @@ bcm283x_uart_opn_por(SIOPCB *p_siopcb, intptr_t exinf)
 #if BCM283X_USE_UART == 1
 		baud = (250000000 / (8 * ATTR_baudRate)) - 1;
 
-		sil_wrw_mem(BCM283X_AUX_ENABLES, 1);		/* Enable UART1 */
-		sil_wrw_mem(BCM283X_AUX_MU_IER_REG, 0);		/* Disable interrupt */
-		sil_wrw_mem(BCM283X_AUX_MU_CNTL_REG, 0);	/* Disable Transmitter and Receiver */
-		sil_wrw_mem(BCM283X_AUX_MU_LCR_REG, 3);		/* Works in 8-bit mode */
-		sil_wrw_mem(BCM283X_AUX_MU_MCR_REG, 0);		/* Disable RTS */
+		sil_wrw_mem((void *)BCM283X_AUX_ENABLES, 1);		/* Enable UART1 */
+		sil_wrw_mem((void *)BCM283X_AUX_MU_IER_REG, 0);		/* Disable interrupt */
+		sil_wrw_mem((void *)BCM283X_AUX_MU_CNTL_REG, 0);	/* Disable Transmitter and Receiver */
+		sil_wrw_mem((void *)BCM283X_AUX_MU_LCR_REG, 3);		/* Works in 8-bit mode */
+		sil_wrw_mem((void *)BCM283X_AUX_MU_MCR_REG, 0);		/* Disable RTS */
 #ifdef BCM283X_UART_ENABLE_FIFO
-		sil_wrw_mem(BCM283X_AUX_MU_IIR_REG, 0xC6);	/* Enable FIFO, Clear FIFO */
+		sil_wrw_mem((void *)BCM283X_AUX_MU_IIR_REG, 0xC6);	/* Enable FIFO, Clear FIFO */
 #else	/* BCM283X_UART_ENABLE_FIFO */
-		sil_wrw_mem(BCM283X_AUX_MU_IIR_REG, 0)	;	/* Disable FIFO */
+		sil_wrw_mem((void *)BCM283X_AUX_MU_IIR_REG, 0)	;	/* Disable FIFO */
 #endif	/* BCM283X_UART_ENABLE_FIFO */
-		sil_wrw_mem(BCM283X_AUX_MU_BAUD_REG, baud);	/* 115200 = system clock 250MHz / (8 * (baud + 1)), baud = 270 */
-		sil_wrw_mem(BCM283X_AUX_MU_CNTL_REG, 3);	/* Enable Transmitter and Receiver */
+		sil_wrw_mem((void *)BCM283X_AUX_MU_BAUD_REG, baud);	/* 115200 = system clock 250MHz / (8 * (baud + 1)), baud = 270 */
+		sil_wrw_mem((void *)BCM283X_AUX_MU_CNTL_REG, 3);	/* Enable Transmitter and Receiver */
 #else	/* BCM283X_USE_UART */
 		ibrd = 3000000 / (ATTR_baudRate * 16);
 		fbrd = (3000000 - (ibrd * ATTR_baudRate * 16)) * 4 / ATTR_baudRate;
 
-		sil_wrw_mem(BCM283X_UART0_CR, 0x0);			/* Disable UART0 */
-		sil_wrw_mem(BCM283X_UART0_ICR, 0x7FF);			/* Interrupt clear */
-		sil_wrw_mem(BCM283X_UART0_IBRD, ibrd);			/* 3000000(300MHz) / (115200 * 16) = 625/384 = 1 + 241/384 */
-		sil_wrw_mem(BCM283X_UART0_FBRD, fbrd);			/* 241/384 * 64 = about 40 */
+		sil_wrw_mem((void *)BCM283X_UART0_CR, 0x0);			/* Disable UART0 */
+		sil_wrw_mem((void *)BCM283X_UART0_ICR, 0x7FF);			/* Interrupt clear */
+		sil_wrw_mem((void *)BCM283X_UART0_IBRD, ibrd);			/* 3000000(300MHz) / (115200 * 16) = 625/384 = 1 + 241/384 */
+		sil_wrw_mem((void *)BCM283X_UART0_FBRD, fbrd);			/* 241/384 * 64 = about 40 */
 #ifdef BCM283X_UART_ENABLE_FIFO
-		sil_wrw_mem(BCM283X_UART0_LCRH, 0x70);			/* FIFO Enable, 8 n 1 */
-		sil_wrw_mem(BCM283X_UART0_IFLS, 0x0);			/* Receive interrupt FIFO 1/8, Transmit interrupt FIFO 1/8 */
-		sil_wrw_mem(BCM283X_UART0_CR, 0x301);			/* Transmit Receive Enable UART0 */
-		while((sil_rew_mem(BCM283X_UART0_FR) & 0x10) == 0) {	/* FIFO clear */
-			sil_rew_mem(BCM283X_UART0_DR);
+		sil_wrw_mem((void *)BCM283X_UART0_LCRH, 0x70);			/* FIFO Enable, 8 n 1 */
+		sil_wrw_mem((void *)BCM283X_UART0_IFLS, 0x0);			/* Receive interrupt FIFO 1/8, Transmit interrupt FIFO 1/8 */
+		sil_wrw_mem((void *)BCM283X_UART0_CR, 0x301);			/* Transmit Receive Enable UART0 */
+		while((sil_rew_mem((void *)BCM283X_UART0_FR) & 0x10) == 0) {	/* FIFO clear */
+			sil_rew_mem((void *)BCM283X_UART0_DR);
 		}
 #else	/* BCM283X_UART_ENABLE_FIFO */
 		sil_wrw_mem(BCM283X_UART0_LCRH, 0x60);			/* FIFO Disable, 8 n 1 */
@@ -353,11 +353,11 @@ sio_cls_por(SIOPCB *p_siopcb)
 	 *  デバイス依存のクローズ処理．
 	 */
 #if BCM283X_USE_UART == 1
-	sil_wrw_mem(BCM283X_AUX_ENABLES, 0);		/* Disable UART1 */
-	sil_wrw_mem(BCM283X_AUX_MU_IER_REG, 0);		/* Disable interrupt */
-	sil_wrw_mem(BCM283X_AUX_MU_CNTL_REG, 0);	/* Disable Transmitter and Receiver */
+	sil_wrw_mem((void *)BCM283X_AUX_ENABLES, 0);		/* Disable UART1 */
+	sil_wrw_mem((void *)BCM283X_AUX_MU_IER_REG, 0);		/* Disable interrupt */
+	sil_wrw_mem((void *)BCM283X_AUX_MU_CNTL_REG, 0);	/* Disable Transmitter and Receiver */
 #else	/* BCM283X_USE_UART */
-	sil_wrw_mem(BCM283X_UART0_CR, 0x0);		/* Disable UART0 */
+	sil_wrw_mem((void *)BCM283X_UART0_CR, 0x0);		/* Disable UART0 */
 #endif	/* BCM283X_USE_UART */
 
 	p_siopcb->openflag = false;

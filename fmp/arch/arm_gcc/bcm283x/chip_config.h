@@ -147,48 +147,8 @@ get_my_p_apcb(void)
 }
 
 /*
- *  マスタプロセッサかを返す
- */
-Inline bool_t
-x_sense_mprc(void){
-	if(x_prc_index() == (TOPPERS_MASTER_PRCID - 1)) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-/*
  *  ロック関係
  */
-
-/*
- *  ジャイアントロックの初期化（G_LOCKの場合）
- */
-Inline void
-x_initialize_giant_lock(LOCK *p_giant_lock)
-{
-	*p_giant_lock = 0;
-}
-
-/*
- *  タスクロックの初期化
- */
-Inline void
-x_initialize_tsk_lock(LOCK *p_tsk_lock)
-{
-	*p_tsk_lock = 0;
-}
-
-/*
- *  オブジェクトロックの初期化
- */
-Inline void
-x_initialize_obj_lock(LOCK *p_obj_lock)
-{
-	*p_obj_lock = 0;
-}
 
 /*
  *  割込み番号の範囲の判定
@@ -532,7 +492,7 @@ x_clear_int(INTNO intno)
 Inline bool_t
 x_probe_int(INTNO intno)
 {
-	return(bcm283x_probe_pending(intno));
+	return(bcm283x_probe_int(intno));
 }
 
 #define t_probe_int(intno) x_probe_int(intno)
@@ -587,6 +547,8 @@ extern void interrupt_handler(void);
  *  未定義の割込みが入った場合の処理
  */
 extern void default_int_handler(void);
+
+extern int bcm283x_getmycoreindex(void);
 
 #endif /* TOPPERS_MACRO_ONLY */
 

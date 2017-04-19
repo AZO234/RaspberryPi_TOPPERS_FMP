@@ -197,7 +197,6 @@ void
 chip_initialize(void)
 {
 	TPCB *p_tpcb = get_my_p_tpcb();
-	uint32_t index = x_prc_index();
 
 #ifdef USE_THREAD_ID_PCB
 	/*
@@ -296,8 +295,6 @@ perf_timer_initialize(intptr_t exinf)
 void
 x_config_int(INTNO intno, ATR intatr, PRI intpri, uint_t affinity_mask)
 {
-	TPCB *p_tpcb = get_my_p_tpcb();
-
 	assert(VALID_INTNO_CFGINT(ID_PRC(x_prc_index()), intno));
 	assert(TMIN_INTPRI <= intpri && intpri <= TMAX_INTPRI);
 

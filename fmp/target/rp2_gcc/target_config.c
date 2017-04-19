@@ -61,29 +61,6 @@ static FILE *trace_log_file;
 uint32_t TOPPERS_spn_var;
 
 /*
- *  文字列の出力（バージョンチェック用）
- */
-static void
-target_fput_str(char *c) {
-	while(*c != '\0') {
-		bcm283x_putc(*c++);
-	}
-}
-
-/*
- *  数字 to 文字変換(4bit用)
- */
-static char
-num_to_char(uint8_t num) {
-	if (num <= 9) {
-		return ('0' + num);
-	}
-	else {
-		return ('a' + (num - 10));
-	}
-}
-
-/*
  *  str_ker() の前でマスタプロセッサで行う初期化
  */
 void
@@ -228,9 +205,6 @@ static void trustzone_configure(void)
 void
 target_initialize(void)
 {
-	TPCB *p_tpcb = get_my_p_tpcb();
-	uint32_t index = x_prc_index();
-
 	/*
 	 *  チップ依存の初期化
 	 */

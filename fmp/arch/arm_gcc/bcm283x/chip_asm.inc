@@ -43,31 +43,6 @@
 
 #include "arm_gcc/common/core_asm.inc"
 
-.macro my_core_index re_reg
-	mrc p15, 0, \re_reg, c0, c0, 5 /* プロセッサIDの取得 */
-	and \re_reg, \re_reg, #0x0f    /* 下位4bitのみ有効   */
-.endm
-
-#ifdef USE_THREAD_ID_PCB
-.macro my_pcb re_reg sc_reg1
-	mrc p15, 0, \re_reg, c13, c0, 4
-.endm
-#else  /* USE_THREAD_ID_PCB */
-.macro my_pcb re_reg sc_reg1
-	mrc p15, 0, \re_reg, c0, c0, 5 /* プロセッサIDの取得 */
-	and \sc_reg1, \re_reg, #0x0f   /* 下位4bitのみ有効   */
-	ldr \re_reg, =p_pcb_table
-	ldr \re_reg, [\re_reg, \sc_reg1, asl #2]
-.endm
-#endif /* USE_THREAD_ID_PCB */
-
-.macro my_istkpt re_reg sc_reg1
-	mrc p15, 0, \re_reg, c0, c0, 5 /* プロセッサIDの取得 */
-	and \sc_reg1, \re_reg, #0x0f   /* 下位4bitのみ有効   */
-	ldr \re_reg, =_kernel_istkpt_table
-	ldr \re_reg, [\re_reg, \sc_reg1, asl #2]
-.endm
-
 #ifndef TOPPRS_NONUSE_CHIP_DEFAULT_CUSTOM_IDLE
 .macro toppers_asm_custom_idle
 	wfi

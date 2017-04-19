@@ -45,7 +45,7 @@
 #ifndef TOPPERS_CHIP_IPI_H
 #define TOPPERS_CHIP_IPI_H
 
-#include "bcm283x.h"
+#include "chip_config.h"
 
 /*
  *  プロセッサ間割込みの割込み番号

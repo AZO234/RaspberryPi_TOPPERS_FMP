@@ -50,33 +50,35 @@ void target_gpio_initialize(void) {
 #if BCM283X_USE_UART == 1
 	/* AUX mini UART : GPIO14 ALT5 PullUD disable / GPIO15 ALT5 PullUD disable */
 
-	r = sil_rew_mem(BCM283X_GPIO_GPFSEL1);
+	r = sil_rew_mem((void *)BCM283X_GPIO_GPFSEL1);
 	r &= ~(7<<12);	/* GPIO14 ALT5 */
 	r |= 2<<12;
 	r &= ~(7<<15);	/* GPIO15 ALT5 */
 	r |= 2<<15;
-	sil_wrw_mem(BCM283X_GPIO_GPFSEL1, r);
+	sil_wrw_mem((void *)BCM283X_GPIO_GPFSEL1, r);
 
-	sil_wrw_mem(BCM283X_GPIO_GPPUD, 0);
-	for(r = 0; r < 150; r++) a = sil_rew_mem(BCM283X_GPIO_GPFSEL1);	/* dummy */
-	sil_wrw_mem(BCM283X_GPIO_GPPUDCLK0, (1<<14)|(1<<15));	/* GPIO14 PullUD disable / GPIO15 PullUD disable */
-	for(r = 0; r < 150; r++) a = sil_rew_mem(BCM283X_GPIO_GPFSEL1);	/* dummy */
-	sil_wrw_mem(BCM283X_GPIO_GPPUDCLK0, 0);
+	sil_wrw_mem((void *)BCM283X_GPIO_GPPUD, 0);
+	for(r = 0; r < 150; r++) a = sil_rew_mem((void *)BCM283X_GPIO_GPFSEL1);	/* dummy */
+	sil_wrw_mem((void *)BCM283X_GPIO_GPPUDCLK0, (1<<14)|(1<<15));	/* GPIO14 PullUD disable / GPIO15 PullUD disable */
+	for(r = 0; r < 150; r++) a = sil_rew_mem((void *)BCM283X_GPIO_GPFSEL1);	/* dummy */
+	sil_wrw_mem((void *)BCM283X_GPIO_GPPUDCLK0, 0);
 #else	/* BCM283X_USE_UART */
 	/* PL011 UART : GPIO14 ALT0 PullUD disable / GPIO15 ALT0 PullUD disable */
 
-	r = sil_rew_mem(BCM283X_GPIO_GPFSEL1);
+	r = sil_rew_mem((void *)BCM283X_GPIO_GPFSEL1);
 	r &= ~(7<<12);	/* GPIO14 ALT0 */
 	r |= 4<<12;
 	r &= ~(7<<15);	/* GPIO15 ALT0 */
 	r |= 4<<15;
-	sil_wrw_mem(BCM283X_GPIO_GPFSEL1, r);
+	sil_wrw_mem((void *)BCM283X_GPIO_GPFSEL1, r);
 
-	sil_wrw_mem(BCM283X_GPIO_GPPUD, 0);
-	for(r = 0; r < 150; r++) a = sil_rew_mem(BCM283X_GPIO_GPFSEL1);	/* dummy */
-	sil_wrw_mem(BCM283X_GPIO_GPPUDCLK0, (1<<14)|(1<<15));	/* GPIO14 PullUD disable / GPIO15 PullUD disable */
-	for(r = 0; r < 150; r++) a = sil_rew_mem(BCM283X_GPIO_GPFSEL1);	/* dummy */
-	sil_wrw_mem(BCM283X_GPIO_GPPUDCLK0, 0);
+	sil_wrw_mem((void *)BCM283X_GPIO_GPPUD, 0);
+	for(r = 0; r < 150; r++) a = sil_rew_mem((void *)BCM283X_GPIO_GPFSEL1);	/* dummy */
+	sil_wrw_mem((void *)BCM283X_GPIO_GPPUDCLK0, (1<<14)|(1<<15));	/* GPIO14 PullUD disable / GPIO15 PullUD disable */
+	for(r = 0; r < 150; r++) a = sil_rew_mem((void *)BCM283X_GPIO_GPFSEL1);	/* dummy */
+	sil_wrw_mem((void *)BCM283X_GPIO_GPPUDCLK0, 0);
 #endif	/* BCM283X_USE_UART */
+
+	(void)a;
 }
 
