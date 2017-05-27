@@ -45,8 +45,8 @@ Eclipse+OpenOCD+JTAG，arm-non-eabi-gdb
 
 コンフィギュレータ は，1.9.6 を用いた．
 
-Linux での使用にあたり，
-文字コードをUTF-8に，改行コードをLFに変換した．
+Linux での使用にあたり，  
+文字コードをUTF-8に，改行コードをLFに変換した．  
 Boost は，1.64.0 を用いた．
 
 コンパイラ
