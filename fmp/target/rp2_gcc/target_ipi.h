@@ -3,7 +3,7 @@
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
  *      Flexible MultiProcessor Kernel
  *
- *  Copyright (C) 2010 by Embedded and Real-Time Systems Laboratory
+ *  Copyright (C) 2009-2017 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
@@ -35,9 +35,10 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  Raspberry Pi porting
- *  2016 (c) AZO
- *
+ *  @(#) $Id: target_ipi.h 1218 2017-05-28 00:00:00Z azo $
+ */
+
+/*  
  *  This file contains the inter-processor interrupts configuration.
  */
 #ifndef TOPPERS_TARGET_IPI_H

@@ -5,7 +5,7 @@
  *
  *  Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
  *                              Toyohashi Univ. of Technology, JAPAN
- *  Copyright (C) 2006-2009 by Embedded and Real-Time Systems Laboratory
+ *  Copyright (C) 2006-2015 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *  Copyright (C) 2007-2010 by Industrial Technology Institute,
  *                              Miyagi Prefectural Government, JAPAN
@@ -39,9 +39,10 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  Raspberry Pi porting
- *  2016 (c) AZO
- *
+ *  @(#) $Id: target_serial.h 1087 2017-05-28 00:00:00Z azo $
+ */
+
+/*
  *  This file contains some definitions for the serial port
  *  interrupt and some function prototypes.
  */

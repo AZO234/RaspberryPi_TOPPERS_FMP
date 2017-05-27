@@ -6,7 +6,7 @@
  *  Copyright (C) 2007-2012 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -35,7 +35,7 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  @(#) $Id: chip_asm.inc 982 2012-12-13 02:23:32Z ertl-sangorrin $
+ *  @(#) $Id: chip_asm.inc 1218 2017-04-25 07:05:23Z ertl-honda $
  */
 
 #ifndef TOPPERS_CHIP_ASM_INC
@@ -45,9 +45,16 @@
 
 #ifndef TOPPRS_NONUSE_CHIP_DEFAULT_CUSTOM_IDLE
 .macro toppers_asm_custom_idle
+#ifndef USE_GIC_CPULOCK
+#ifndef TOPPERS_ENABLE_QEMU
 	wfi
+#endif /* TOPPERS_ENABLE_QEMU */
 	msr   cpsr, #(CPSR_SVC|CPSR_ALWAYS_SET) /* 割り込み許可(システムモード) */
 	msr   cpsr, #(CPSR_SVC|CPSR_CPULOCK|CPSR_ALWAYS_SET) /* CPUロック(システムモード) */
+#else /* USE_GIC_CPULOCK */
+	gic_unlock_cpu r8, r9
+	gic_lock_cpu r8, r9
+#endif /* USE_GIC_CPULOCK */
 .endm
 #endif /* TOPPRS_NOTUSE_CHIP_DEFAULT_CUSTOM_IDLE */
 

@@ -16,4 +16,3 @@ $
 $  オフセット値のマクロ定義の生成
 $
 $DEFINE("PCB_p_inh_tbl", offsetof_PCB_p_inh_tbl)$
-

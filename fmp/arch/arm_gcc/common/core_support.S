@@ -8,7 +8,7 @@
  *  Copyright (C) 2006-2016 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -37,7 +37,7 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  @(#) $Id: core_support.S 1175 2016-06-13 14:07:13Z ertl-honda $
+ *  @(#) $Id: core_support.S 1218 2017-04-25 07:05:23Z ertl-honda $
  */
 
 /*
@@ -74,6 +74,7 @@ ALABEL(vector_table)
  *  ジャンプ先アドレス
  */
     AGLOBAL(vector_ref_tbl)
+    AGLOBAL(vector_ref_tbl_end)
 ALABEL(vector_ref_tbl)
 ALABEL(reset_vector)
     ALONG   start
@@ -89,6 +90,7 @@ ALABEL(irq_vector)
     ALONG   irq_handler
 ALABEL(fiq_vector)
     ALONG   fiq_handler
+ALABEL(vector_ref_tbl_end)
 
 #include "target_asm.inc"
 
@@ -444,7 +446,7 @@ ALABEL(ret_int_2)
     ldmfd sp!,{r1}              /* CPSRの復帰処理 */
     msr   spsr_cxsf, r1              /* 戻り先のcpsrをspsrに設定 */
     ldmfd sp!,{r0-r5,ip,lr,pc}^ /* コンテキストの復帰，^付きなので、cpsr <- spsr */
-#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 #if defined(SUPPORT_VFPv3_NEON)
     vpop    {d0-d7}             /* スクラッチレジスタの復帰 */
     pop     {R0}                /* FPSCRレジスタの復帰      */
@@ -452,7 +454,7 @@ ALABEL(ret_int_2)
 #endif /* SUPPORT_VFPv3_NEON */
     ldmfd sp!,{r0-r5,ip,lr}
     rfeia sp!
-#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 
 ALABEL(ret_int_3)
     /*
@@ -577,7 +579,7 @@ ALABEL(ret_int_r_2)
     ldmfd sp!, {r0}             /* spsr を復帰 */
     msr   spsr_cxsf,r0          /* 戻り先のcpsrをspsrに設定 */
     ldmfd sp!,{r0-r3,ip,lr,pc}^ /* タスクに復帰 ^付きなので、cpsr <- spsr */
-#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 #if defined(SUPPORT_VFPv3_NEON)
     vpop    {d0-d7}        /* スクラッチレジスタの復帰 */
     pop     {R0}           /* FPSCRレジスタの復帰 */
@@ -585,7 +587,7 @@ ALABEL(ret_int_r_2)
 #endif /* SUPPORT_VFPv3_NEON */
     ldmfd sp!,{r0-r5,ip,lr}
     rfeia sp!
-#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 
 /*
  * CPU例外ハンドラ
@@ -614,7 +616,7 @@ ALABEL(undef_handler)
     msr   cpsr_cxsf, #(CPSR_UND AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     mov   r0, lr
     mrs   r1, spsr
-#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
     /*
      * lr(戻り先) spsr(cpsr_svc)をスーパーバイザーモードのスタックへ
      * 保存．
@@ -628,7 +630,7 @@ ALABEL(undef_handler)
      */
     msr   cpsr_cxsf, #(CPSR_SVC AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     stmfd sp!, {r0-r3,ip,lr}
-#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 
     mov   r2, #EXCH_NO_UNDEF
     b     target_exc_handler
@@ -649,7 +651,7 @@ ALABEL(swi_handler)
     stmfd sp!, {r0-r3,ip,lr,pc} /* pcはダミー */
     mov   r0, lr
     mrs   r1, spsr
-#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
     /*
      * lr(戻り先) spsr(cpsr_svc)をスーパーバイザーモードのスタックへ
      * 保存．
@@ -663,7 +665,7 @@ ALABEL(swi_handler)
      */
     msr   cpsr_cxsf, #(CPSR_SVC AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     stmfd sp!, {r0-r3,ip,lr}
-#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 
     mov   r2, #EXCH_NO_SWI
     b     target_exc_handler
@@ -688,7 +690,7 @@ ALABEL(prefetch_handler)
     msr   cpsr_cxsf, #(CPSR_ABT AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     mov   r0, lr
     mrs   r1, spsr
-#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
     /*
      * lr(戻り先) spsr(cpsr_svc)をスーパーバイザーモードのスタックへ
      * 保存．
@@ -700,7 +702,7 @@ ALABEL(prefetch_handler)
      */
     msr   cpsr_cxsf, #(CPSR_SVC AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     stmfd sp!, {r0-r3,ip,lr}
-#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 
     mov   r2, #EXCH_NO_PABORT
     b     target_exc_handler
@@ -725,7 +727,7 @@ ALABEL(data_abort_handler)
     msr   cpsr_cxsf, #(CPSR_ABT AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     mov   r0, lr
     mrs   r1, spsr
-#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
     /*
      * lr(戻り先) spsr(cpsr_svc)をスーパーバイザーモードのスタックへ
      * 保存．
@@ -737,7 +739,7 @@ ALABEL(data_abort_handler)
      */
     msr   cpsr_cxsf, #(CPSR_SVC AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     stmfd sp!, {r0-r3,ip,lr}
-#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 
     mov   r2, #EXCH_NO_DABORT
     b     target_exc_handler
@@ -764,7 +766,7 @@ ALABEL(fiq_handler)
     msr   cpsr_cxsf, #(CPSR_FIQ AOR CPSR_FIQ_BIT AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     mov   r0, lr
     mrs   r1, spsr
-#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#else /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
     /*
      * lr(戻り先) spsr(cpsr_svc)をスーパーバイザーモードのスタックへ
      * 保存．
@@ -776,7 +778,7 @@ ALABEL(fiq_handler)
      */
     msr   cpsr_cxsf, #(CPSR_SVC AOR CPSR_CPULOCK AOR CPSR_ALWAYS_SET)
     stmfd sp!, {r0-r3,ip,lr}
-#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) */
+#endif /* (__TARGET_ARCH_ARM == 6) || (__TARGET_ARCH_ARM == 7) || (__TARGET_ARCH_ARM == 8) */
 
     mov   r2, #EXCH_NO_FIQ
     b     target_exc_handler

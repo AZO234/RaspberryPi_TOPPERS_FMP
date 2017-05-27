@@ -40,6 +40,15 @@ Ubuntu 16.04 LTS 64bit である．
 Eclipse+OpenOCD+JTAG，arm-non-eabi-gdb  
 を用いて開発・デバッグを行った．
 
+コンフィギュレータ
+------------------
+
+コンフィギュレータ は，1.9.6 を用いた．
+
+Linux での使用にあたり，
+文字コードをUTF-8に，改行コードをLFに変換した．
+Boost は，1.64.0 を用いた．
+
 コンパイラ
 ----------
 
@@ -54,8 +63,11 @@ TOPPERS/FMPカーネル 簡易版
 https://www.toppers.jp/fmp-e-download.html
 
 「Zynq7000（Xilinx社）簡易パッケージ」を取得し、  
-（例：fmp_zynq_gcc-20170315.zip）  
+（例：fmp_zynq_gcc-20170523.zip）  
 本ソース差分を上書きする。
+
+「コンフィギュレータ Release 1.9.6」を取得し、
+cfg ディレクトリに配置し，ビルドしておく．
 
 user.txtに従ってビルド環境を作成する．  
 <ターゲット略称> は，rp2_gcc または rp3_gcc となる．

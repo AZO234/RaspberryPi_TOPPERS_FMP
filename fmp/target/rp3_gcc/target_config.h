@@ -5,7 +5,7 @@
  *
  *  Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
  *                              Toyohashi Univ. of Technology, JAPAN
- *  Copyright (C) 2006-2010 by Embedded and Real-Time Systems Laboratory
+ *  Copyright (C) 2006-2013 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
@@ -37,9 +37,10 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  Raspberry Pi porting
- *  2016 (c) AZO
- *
+ *  @(#) $Id: target_config.h 1024 2017-05-28 00:00:00Z azo $
+ */
+
+/*
  *  This file contains some configuration-dependent information
  *  and some prototype functions.
  */

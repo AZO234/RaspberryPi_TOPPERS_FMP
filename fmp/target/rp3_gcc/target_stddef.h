@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2007 by Embedded and Real-Time Systems Laboratory
+ *  Copyright (C) 2007-2013 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
@@ -34,9 +34,10 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  Raspberry Pi porting
- *  2016 (c) AZO
- *
+ *  @(#) $Id: target_stddef.h 1024 2017-05-28 00:00:00Z azo $
+ */
+
+/*  
  *  This file is the target-dependent part of t_stddef.h.
  *  It is only included by t_stddef.h at the top part.
  */

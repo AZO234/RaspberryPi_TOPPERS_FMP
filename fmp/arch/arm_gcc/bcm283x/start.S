@@ -7,7 +7,7 @@
  *  Copyright (C) 2005-2011 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -36,7 +36,7 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  @(#) $Id: start.S 881 2016-10-19 00:00:00Z azo $
+ *  @(#) $Id: start.S 1219 2017-05-28 00:00:00Z azo $
  */
 
 /*
@@ -210,13 +210,12 @@ ALABEL(start_2)
     blo  start_2
 #endif /* TOPPERS_OMIT_BSS_INIT */
 
-ALABEL(start_3)
-#ifndef TOPPERS_OMIT_DATA_INIT
     /*
      *  dataセクションの初期化(ROM化対応)
      *  IDATA_START から IDATA_END までを，DATA_START 以降に
      *  コピーする
      */
+ALABEL(start_3)
     ldr  r1, =IDATA_START
     ldr  r3, =IDATA_END
     cmp  r1, r3
@@ -227,7 +226,6 @@ ALABEL(start_4)
     str  r0, [r2],#4
     cmp  r1, r3
     blo  start_4
-#endif /* TOPPERS_OMIT_DATA_INIT */
 
     /*
      *  software_init_hook を呼出し（0 でない場合）
@@ -265,6 +263,9 @@ ALABEL(start_8)
     cmp  r2, #(TNUM_PRCID * 4)
     bne  start_8
 
+    /* 全コアに通知 */
+    sev
+
     /* マスタプロセッサ用のstart_syncを初期化 */
     my_core_index r1
     str  r2, [r0, r1, lsl #2]
@@ -297,23 +298,4 @@ ALABEL(main)
 	AGLOBAL(_exit)
 ALABEL(_exit)
 	b		_exit
-
-	AGLOBAL(azo_ledon)
-ALABEL(azo_ledon)
-	ldr r1, =0x3F200008
-	ldr r0, [r1]
-	bic r0, #0x78
-	orr r0, #0x08
-	str r0, [r1]
-	ldr r1, =0x3F20001C
-	mov r0, #0x200000
-	str r0, [r1]
-	bx lr
-
-	AGLOBAL(azo_ledoff)
-ALABEL(azo_ledoff)
-	ldr r1, =0x3F200028
-	mov r0, #0x200000
-	str r0, [r1]
-	bx lr
 
