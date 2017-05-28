@@ -28,7 +28,6 @@ chip_timer.c
 chip_timer.cfg
 chip_timer.h
 chip_unrename.h
-chip_user.txt
 mpcore.c
 mpcore.h
 mpcore_tool.h

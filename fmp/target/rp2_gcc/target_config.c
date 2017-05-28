@@ -101,11 +101,6 @@ target_fput_log(char c)
  *
  * We create a simpe 1-to-1 (physical address = virtual address) memory
  * mapping and enable caching for the DDR memory.
- *
- * Note: when not using SafeG the default world is Secure. When using
- * SafeG, Secure world uses secure accesses by default. If you want to
- * access a shared memory region with non-secure access, you will have
- * to configure it manually.
  */
 void
 target_mmu_init(void)
@@ -123,9 +118,6 @@ target_mmu_init(void)
         m_attribute.pa   = 0x00000000;
         m_attribute.va   = m_attribute.pa;
         m_attribute.size = 0x3F000000;
-#if defined(TOPPERS_SAFEG_SECURE) || defined(TOPPERS_NOSAFEG)
-        m_attribute.ns   = 1;     /* 0=Secure */
-#endif
 //        m_attribute.s    = 1;     /* 1=Shared */
         m_attribute.s    = 0;     /* 1=Shared */
         m_attribute.ap   = 3;     /* Full access */
@@ -142,9 +134,6 @@ target_mmu_init(void)
         m_attribute.pa   = 0x3F000000;
         m_attribute.va   = m_attribute.pa;
         m_attribute.size = 0x02000000;
-#if defined(TOPPERS_SAFEG_SECURE) || defined(TOPPERS_NOSAFEG)
-        m_attribute.ns   = 1;     /* 0=Secure */
-#endif
 //        m_attribute.s    = 1;     /* 1=Shared */
         m_attribute.s    = 0;     /* 1=Shared */
         m_attribute.ap   = 3;     /* Full access */
@@ -155,105 +144,10 @@ target_mmu_init(void)
         mmu_map_memory(&m_attribute);
 }
 
-#ifdef TOPPERS_SAFEG_SECURE
-/*
- *  Fist swith to NT code(target_support.S)
- */
-extern uint8_t first_switch_to_nt;
-extern uint8_t first_switch_to_nt_end;
-
-static void
-copy_first_switch_to_nt(void){
-	int cnt;
-	volatile uint8_t *dst_addr;
-
-	dst_addr = (uint8_t*)OCM_ADDR;
-	for (cnt = 0; cnt < (&first_switch_to_nt_end - &first_switch_to_nt); cnt++) {
-		*(dst_addr + cnt) = *(volatile uint8_t *)(&first_switch_to_nt + cnt);
-	}
-
-	__asm__ volatile("dsb");
-	__asm__ volatile("isb");
-}
-#endif /* TOPPERS_SAFEG_SECURE */
-
-#ifdef TOPPERS_SAFEG_SECURE
-#include "syscalls_api.h"
-#include "pl310.h"
-
-/*
- * L2 cache initialize syscall
- */
-uint32_t
-safeg_l2cache_init(const uint32_t core_id,
-				   const uint32_t ns,
-				   const uint32_t aux_val,
-				   const uint32_t aux_mask,
-				   const uint32_t c)
-{
-	pl310_init(aux_val, aux_mask);
-	return SAFEG_OK(SAFEG_SYSCALL_RET__DONT_SWITCH);
-}
-
-struct safeg_syscall l2init_call = {
-	.is_t_callable  = 1,
-	.is_nt_callable = 1,
-	.name = "l2init",
-	.function = safeg_l2cache_init,
-};
-
-/*
- * Regist L2 cache debug register warite syscall
- */
-uint32_t
-l2cache_debug_set(const uint32_t core_id,
-				  const uint32_t ns,
-				  const uint32_t a,
-				  const uint32_t b,
-				  const uint32_t c)
-{
-	pl310_debug_set(a);
-	return SAFEG_OK(SAFEG_SYSCALL_RET__DONT_SWITCH);
-}
-
-struct safeg_syscall l2debug_set_call = {
-	.is_t_callable  = 1,
-	.is_nt_callable = 1,
-	.name = "l2debug",
-	.function = l2cache_debug_set,
-};
-
-/*
- * Boot second core
- */
-uint32_t
-safeg_boot_second_core(const uint32_t core_id,
-				   const uint32_t ns,
-				   const uint32_t address,
-				   const uint32_t b,
-				   const uint32_t c)
-{
-	boot_second_core(address);
-	return SAFEG_OK(SAFEG_SYSCALL_RET__DONT_SWITCH);
-}
-
-struct safeg_syscall boot_second_core_call = {
-	.is_t_callable  = 1,
-	.is_nt_callable = 1,
-	.name = "bsecond",
-	.function = safeg_boot_second_core,
-};
-
-#endif /* TOPPERS_SAFEG_SECURE */
-
 /*
  *  Target-dependent initialization
  */
 extern SIOPCB *bcm283x_uart_opn_por(SIOPCB *p_siopcb, intptr_t exinf);
-
-#if !defined(TOPPERS_SAFEG_SECURE)
-volatile uint32_t target_initialize_end[TNUM_PRCID];
-#endif /* !TOPPERS_SAFEG_SECURE */
 
 void
 target_initialize(void)
@@ -275,45 +169,6 @@ target_initialize(void)
 #else /* !G_SYSLOG */
 	sio_opn_por(1, 0);
 #endif /* G_SYSLOG */
-
-
-#ifdef TOPPERS_SAFEG_SECURE
-	/* Set NULL(0x00) for Linux second core boot */
-	sil_wrw_mem((uint32_t*)BOOT_MEM_ADDR, 0x00);
-	copy_first_switch_to_nt();
-#endif /* TOPPERS_SAFEG_SECURE */
-
-#ifdef TOPPERS_SAFEG_SECURE
-	if (x_sense_mprc()) {
-		/* Regist L2 cache initialize syscall */
-		uint32_t id;
-		safeg_syscall_regdyn(&l2init_call, &id);
-
-		/* Regist L2 cache debug register write syscall */
-		safeg_syscall_regdyn(&l2debug_set_call, &id);
-
-		/* Regist boot second core syscall */
-		safeg_syscall_regdyn(&boot_second_core_call, &id);
-	}
-#endif /*  TOPPERS_SAFEG_SECURE */
-
-#ifdef TOPPERS_NOSAFEG
-	/* Enable L2 cache by myself in case of without safeg or with safeg Non-Secure */
-	if (x_sense_mprc()) {
-		uint32_t i;
-		uint32_t sum = 0;
-		while(1) {
-			for(i = 1; i < TNUM_PRCID; i++) {
-				sum += target_initialize_end[i];
-			}
-			if (sum == (TNUM_PRCID - 1)) {
-				break;
-			}
-		}
-		pl310_init(0, ~0x0U);
-	}
-	target_initialize_end[x_prc_index()] = 1;
-#endif /* TOPPERS_NOSAFEG */
 }
 
 /*

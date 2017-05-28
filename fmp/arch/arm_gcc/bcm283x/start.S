@@ -160,15 +160,6 @@ ALABEL(bcm283x_start_slave)
     isb sy
 #endif /* SUPPORT_VFPv3_NEON */
 
-#ifdef TOPPERS_SAFEG_SECURE
-    /*
-     *  NSACRのビット[11:10]をセットしてNon-SecureからCP11/CP10へのアクセスを許可する
-     */
-    mrc p15, 0, r0, c1, c1, 2
-    mov r0, #0x00000C00
-    mcr p15, 0, r0, c1, c1, 2
-#endif /* TOPPERS_SAFEG_SECURE */
-
     /*
      *  hardware_init_hookの呼び出し （0でない場合）
      *

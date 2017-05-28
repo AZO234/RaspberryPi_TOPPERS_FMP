@@ -209,16 +209,6 @@ bsc283x_irc_begin_int_6:
    cmp   r2, r1
    beq   ret_int_2
 
-#ifdef TOPPERS_SAFEG_SECURE
-   /*
-    *  TrustZoneを用いるときは，INT_ID=1022(0x03fe)も
-    *  spurious割込みとなる．
-    */
-   ldr   r2, =(0x03fe)
-   cmp   r2, r1
-   beq   ret_int_2
-#endif /* TOPPERS_SAFEG_SECURE */
-
 	/* MailBox割り込みは、NMIなのでクリアする */
 	cmp   r3, #0xE
 	bne   bsc283x_int_mb_continue
@@ -326,12 +316,6 @@ bsc283x_int_ltimer_continue:
 bsc283x_ipi_1:		/* コア0以外はAICを操作しない */
 
     stmfd sp!,{r1}       /* inhno を保存  -16 */
-
-#ifdef TOPPERS_SAFEG_LOAD
-    stmfd sp!,{r0,r1}  /* r1はスタック境界調整のためのダミー */
-    bl safeg_load_int
-    ldmfd sp!,{r0,r1}  /* r1はスタック境界調整のためのダミー */
-#endif /* TOPPERS_SAFEG_LOAD */
 
     /*
      * 割り込み許可
