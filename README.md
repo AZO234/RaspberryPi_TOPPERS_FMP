@@ -101,36 +101,28 @@ Sample1のシステムログの出力
 通常のままビルド・実行しても何も出力されないので、  
 ビルド前にSample1を変更して、ログ出力を有効にすると良い。
 
-* syssvc/banner.c
+* syssvc/logtask.c
 
-[変更前]
+[変更前] logtask_main()内
 
-    void
-    print_banner_copyright(intptr_t exinf)
-    {
-        syslog_3(LOG_NOTICE, banner,  
+    syslog_msk_log(LOG_UPTO(LOG_NOTICE), LOG_UPTO(LOG_EMERG));
+    syslog_1(LOG_NOTICE, "System logging task is started on port %d.",
 
 [変更後]
 
-    void
-    print_banner_copyright(intptr_t exinf)
-    {
-        syslog_msk_log(LOG_UPTO(LOG_DEBUG), LOG_UPTO(LOG_DEBUG));  
-        syslog_3(LOG_NOTICE, banner,  
+    //syslog_msk_log(LOG_UPTO(LOG_NOTICE), LOG_UPTO(LOG_EMERG));
+    syslog_msk_log(LOG_UPTO(LOG_DEBUG), LOG_UPTO(LOG_DEBUG));
+    syslog_1(LOG_NOTICE, "System logging task is started on port %d.",
 
 * sample/sample1.c
 
 [変更前] main_task()内
 
-    HRTCNT	hrtcnt1, hrtcnt2;
-
-    //SVC_PERROR(syslog_msk_log(LOG_UPTO(LOG_INFO), LOG_UPTO(LOG_EMERG)));
+    SVC_PERROR(syslog_msk_log(LOG_UPTO(LOG_INFO), LOG_UPTO(LOG_EMERG)));
     syslog(LOG_NOTICE, "Sample program starts (exinf = %d).", (int_t) exinf);
 
 [変更後]
 
-    HRTCNT	hrtcnt1, hrtcnt2;
-
-    SVC_PERROR(syslog_msk_log(LOG_UPTO(LOG_INFO), LOG_UPTO(LOG_EMERG)));
+    //SVC_PERROR(syslog_msk_log(LOG_UPTO(LOG_INFO), LOG_UPTO(LOG_EMERG)));
     syslog(LOG_NOTICE, "Sample program starts (exinf = %d).", (int_t) exinf);
 
